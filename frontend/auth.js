@@ -1,4 +1,4 @@
-const API_URL = 'https://task-manager-backend-mqme.onrender.com/api/auth';
+const API_URL = 'http://localhost:5000/api/auth';
 
 // If already logged in, skip straight to the app
 if (localStorage.getItem('token')) {

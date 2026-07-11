@@ -255,12 +255,64 @@ textarea:focus-visible {
 .btn-delete { background: transparent; color: var(--high); border: 1px solid var(--high) !important; }
 .btn-progress { background: var(--medium); color: white; }
 
+/* Task card sub-elements */
+.priority-flag {
+  display: none; /* priority is already shown via the card's colored left border, so this stays hidden */
+}
+
+.task-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 100px;
+  white-space: nowrap;
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.status-pill.pending { background: #F1E7D6; color: #8A6A2E; }
+.status-pill.in-progress { background: #FCE9DA; color: var(--medium); }
+.status-pill.completed { background: #DFF0E6; color: var(--low); }
+
+.priority-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
 .empty-state {
   text-align: center;
   color: var(--text-muted);
   padding: 48px 20px;
   font-family: var(--font-mono);
   font-size: 13px;
+  animation: taskEnter 0.3s ease both;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+.empty-sub {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+  opacity: 0.8;
 }
 
 /* ============ AUTH PAGE (login.html) - split layout ============ */
@@ -454,4 +506,97 @@ textarea:focus-visible {
 
 @media (min-width: 860px) {
   .auth-brand { display: flex; }
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================
+   Everything below is new. Each block explains what it does
+   and which JS change (if any) makes it work.
+   ============================================================ */
+
+/* 1. TASK CARD ENTRANCE
+   Every .task-card fades in and slides up slightly when it
+   appears. Because .task-card already has this animation
+   applied unconditionally, it replays every time renderTasks()
+   rebuilds the list (e.g. after adding a task, or switching a
+   filter) - not just on page load. */
+@keyframes taskEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.task-card {
+  animation: taskEnter 0.28s ease both;
+}
+
+/* 2. STAGGERED ENTRANCE
+   Without this, all cards would fade in at the exact same
+   instant - fine, but a "one after another" feel reads as more
+   polished. script.js now writes a CSS variable --i (the
+   card's position in the list, 0/1/2/3...) as an inline style
+   on each card. animation-delay uses that variable to delay
+   each card by 40ms more than the one before it, producing the
+   cascade effect. If --i isn't set (fallback), it defaults to 0. */
+.task-card {
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* 3. DELETE ANIMATION
+   script.js now adds this "removing" class to a card BEFORE
+   it calls the DELETE API, waits for this transition to finish,
+   then removes the task and re-renders. Without this, a card
+   would just vanish instantly (jarring). "animation: none"
+   cancels the entrance keyframe above so it doesn't fight with
+   this transition. */
+.task-card.removing {
+  animation: none;
+  transition: opacity 0.22s ease, transform 0.22s ease,
+              margin 0.22s ease, max-height 0.22s ease,
+              padding 0.22s ease;
+  opacity: 0;
+  transform: scale(0.96);
+  max-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* 4. BUTTON PRESS FEEDBACK
+   A tiny, satisfying "press in" on every button when clicked -
+   pure CSS, no JS needed. :active means "while the mouse button
+   is held down on this element". */
+button {
+  transition: transform 0.1s ease;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* 5. "JUST COMPLETED" PULSE
+   script.js adds this class right when you click "Complete",
+   briefly, before the card re-renders as a completed task -
+   a quick green glow to confirm the action landed. */
+@keyframes completePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(46, 139, 87, 0.35); }
+  70%  { box-shadow: 0 0 0 10px rgba(46, 139, 87, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 139, 87, 0); }
+}
+
+.task-card.just-completed {
+  animation: completePulse 0.6s ease-out;
+}
+
+/* 6. AUTH FORM TRANSITIONS (login.html)
+   Reuses the same taskEnter keyframe. No JS change needed here:
+   auth.js already toggles the "hidden" class (display:none) to
+   switch between Login/Register and Email/Phone forms. Any time
+   an element goes from display:none to visible, the browser
+   restarts its CSS animation automatically - so switching tabs
+   now fades+rises instead of snapping into place. */
+.auth-form {
+  animation: taskEnter 0.25s ease both;
 }
