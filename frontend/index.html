@@ -8,26 +8,32 @@
 </head>
 <body>
   <div class="container">
-    <h1>📋 Task Manager</h1>
+    <div class="topbar">
+      <h1>Task Manager</h1>
+      <div class="user-info">
+        <span id="welcome-user"></span>
+        <button id="logout-btn">Logout</button>
+      </div>
+    </div>
 
     <form id="task-form">
-      <input type="text" id="title" placeholder="Task title" required>
-      <textarea id="description" placeholder="Description (optional)"></textarea>
+      <input type="text" id="title" placeholder="What needs doing?" required>
+      <textarea id="description" placeholder="Add a note (optional)"></textarea>
       <div class="form-row">
         <select id="priority">
-          <option value="low">Low</option>
-          <option value="medium" selected>Medium</option>
-          <option value="high">High</option>
+          <option value="low">Low priority</option>
+          <option value="medium" selected>Medium priority</option>
+          <option value="high">High priority</option>
         </select>
         <input type="date" id="dueDate">
       </div>
-      <button type="submit">Add Task</button>
+      <button type="submit">Add task</button>
     </form>
 
     <div class="filter-bar">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="pending">Pending</button>
-      <button class="filter-btn" data-filter="in-progress">In Progress</button>
+      <button class="filter-btn" data-filter="in-progress">In progress</button>
       <button class="filter-btn" data-filter="completed">Completed</button>
     </div>
 

@@ -1,44 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink: #17221E;
+  --panel: #0F2A24;
+  --panel-light: #163832;
+  --paper: #F6F5F0;
+  --card: #FFFFFF;
+  --accent: #147D6F;
+  --accent-dark: #0D5B50;
+  --accent-soft: #E3F1EE;
+  --high: #C1442C;
+  --medium: #C98A25;
+  --low: #2E8B57;
+  --border: #E2E0D6;
+  --text: #1F2A26;
+  --text-muted: #6B7570;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
-  background: #f4f6f8;
-  padding: 30px 15px;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
+
+/* ============ SHARED ============ */
+
+.hidden { display: none !important; }
+
+button {
+  font-family: var(--font-body);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ============ APP LAYOUT (index.html) ============ */
 
 .container {
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
-  background: #fff;
-  padding: 24px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 48px 20px 80px;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #2c3e50;
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
 }
 
+.topbar h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.user-info button {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.user-info button:hover {
+  border-color: var(--high);
+  color: var(--high);
+}
+
+/* Task form card */
 #task-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 28px;
+  box-shadow: 0 1px 2px rgba(23, 34, 30, 0.04);
 }
 
 #task-form input,
 #task-form textarea,
 #task-form select {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 14px;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--text);
+}
+
+#task-form textarea {
+  resize: vertical;
+  min-height: 44px;
 }
 
 .form-row {
@@ -52,86 +142,316 @@ h1 {
 }
 
 #task-form button {
-  background: #3498db;
+  background: var(--accent);
   color: white;
   border: none;
-  padding: 12px;
-  border-radius: 6px;
+  padding: 13px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin-top: 4px;
+  transition: background 0.15s ease;
 }
 
 #task-form button:hover {
-  background: #2980b9;
+  background: var(--accent-dark);
 }
 
+/* Filter pills */
 .filter-bar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px;
 }
 
 .filter-btn {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 6px;
+  padding: 9px;
+  border: none;
+  background: transparent;
+  border-radius: 100px;
   cursor: pointer;
   font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
 }
 
 .filter-btn.active {
-  background: #2c3e50;
+  background: var(--ink);
   color: white;
 }
 
+/* Task cards */
 .task-card {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
   margin-bottom: 10px;
-  border-left: 5px solid #3498db;
+  border-left: 4px solid var(--accent);
+  transition: box-shadow 0.15s ease;
 }
 
-.task-card.high { border-left-color: #e74c3c; }
-.task-card.medium { border-left-color: #f39c12; }
-.task-card.low { border-left-color: #2ecc71; }
+.task-card:hover {
+  box-shadow: 0 2px 10px rgba(23, 34, 30, 0.06);
+}
+
+.task-card.high { border-left-color: var(--high); }
+.task-card.medium { border-left-color: var(--medium); }
+.task-card.low { border-left-color: var(--low); }
 
 .task-card h3 {
-  margin-bottom: 6px;
-  color: #2c3e50;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  margin-bottom: 4px;
+  color: var(--ink);
 }
 
 .task-card p {
-  color: #555;
+  color: var(--text-muted);
   font-size: 14px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 .task-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
-  color: #888;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.task-meta > span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
 }
 
 .task-actions button {
   border: none;
-  padding: 6px 10px;
-  border-radius: 5px;
+  padding: 7px 12px;
+  border-radius: 100px;
   cursor: pointer;
   margin-left: 6px;
   font-size: 12px;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
 }
 
-.btn-complete { background: #2ecc71; color: white; }
-.btn-delete { background: #e74c3c; color: white; }
-.btn-progress { background: #f39c12; color: white; }
+.task-actions button:hover { opacity: 0.85; }
+
+.btn-complete { background: var(--low); color: white; }
+.btn-delete { background: transparent; color: var(--high); border: 1px solid var(--high) !important; }
+.btn-progress { background: var(--medium); color: white; }
 
 .empty-state {
   text-align: center;
-  color: #999;
-  padding: 20px;
+  color: var(--text-muted);
+  padding: 48px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* ============ AUTH PAGE (login.html) - split layout ============ */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+}
+
+.auth-brand {
+  flex: 1;
+  background: var(--panel);
+  background-image:
+    radial-gradient(circle at 15% 20%, var(--panel-light) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(20, 125, 111, 0.35) 0%, transparent 50%);
+  color: #F6F5F0;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px;
+}
+
+.auth-brand-top .brand-mark {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(246, 245, 240, 0.6);
+  margin-bottom: 24px;
+}
+
+.auth-brand-top h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 44px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  max-width: 380px;
+}
+
+.auth-brand-bottom p {
+  font-size: 14px;
+  color: rgba(246, 245, 240, 0.65);
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.auth-brand-bottom .quote-mark {
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: var(--accent);
+  line-height: 0.5;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.auth-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-container > h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+  margin-bottom: 28px;
+  color: var(--ink);
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 18px;
+  border-radius: 100px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-radius: 100px;
+  transition: all 0.15s ease;
+}
+
+.auth-tab.active {
+  background: var(--ink);
+  color: white;
+}
+
+.auth-subtabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.auth-subtab {
+  flex: 1;
+  padding: 9px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.auth-subtab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form input {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  background: var(--card);
+}
+
+.auth-form button[type="submit"] {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+  transition: background 0.15s ease;
+}
+
+.auth-form button[type="submit"]:hover {
+  background: var(--accent-dark);
+}
+
+.link-btn {
+  background: none !important;
+  color: var(--accent) !important;
+  padding: 4px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-error {
+  color: var(--high);
+  font-size: 13px;
+  min-height: 16px;
+  margin-bottom: 4px;
+}
+
+.auth-info {
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  min-height: 0;
+  margin-bottom: 4px;
+}
+
+.auth-error:empty, .auth-info:empty { display: none; }
+
+@media (min-width: 860px) {
+  .auth-brand { display: flex; }
 }

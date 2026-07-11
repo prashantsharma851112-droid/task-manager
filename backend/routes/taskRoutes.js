@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
+const protect = require('../middleware/authMiddleware');
 
-// GET all tasks (with optional status filter)
+// All routes below require a valid logged-in user
+router.use(protect);
+
+// GET all tasks belonging to the logged-in user (with optional status filter)
 router.get('/', async (req, res) => {
   try {
-    const filter = {};
+    const filter = { user: req.userId };
     if (req.query.status) {
       filter.status = req.query.status;
     }
@@ -16,10 +20,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single task by ID
+// GET single task by ID (only if it belongs to the logged-in user)
 router.get('/:id', async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findOne({ _id: req.params.id, user: req.userId });
     if (!task) return res.status(404).json({ error: 'Task not found' });
     res.json(task);
   } catch (err) {
@@ -27,10 +31,10 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// CREATE a new task
+// CREATE a new task, linked to the logged-in user
 router.post('/', async (req, res) => {
   try {
-    const task = new Task(req.body);
+    const task = new Task({ ...req.body, user: req.userId });
     const savedTask = await task.save();
     res.status(201).json(savedTask);
   } catch (err) {
@@ -38,11 +42,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-// UPDATE a task
+// UPDATE a task (only if it belongs to the logged-in user)
 router.put('/:id', async (req, res) => {
   try {
-    const updatedTask = await Task.findByIdAndUpdate(
-      req.params.id,
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: req.params.id, user: req.userId },
       req.body,
       { new: true, runValidators: true }
     );
@@ -53,10 +57,10 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE a task
+// DELETE a task (only if it belongs to the logged-in user)
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.id);
+    const deletedTask = await Task.findOneAndDelete({ _id: req.params.id, user: req.userId });
     if (!deletedTask) return res.status(404).json({ error: 'Task not found' });
     res.json({ message: 'Task deleted successfully' });
   } catch (err) {

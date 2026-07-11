@@ -3,6 +3,10 @@
 A full-stack task management application that lets users create, update, filter, and delete tasks. Built to practice REST API design and full-stack integration.
 
 ## Features
+- Phone number + OTP based registration and login (demo mode - OTP shown on screen instead of real SMS)
+- Name collected at registration and shown after login
+- JWT-based session tokens
+- Each user only sees and manages their own tasks
 - Create tasks with title, description, priority, and due date
 - Update task status (Pending → In Progress → Completed)
 - Filter tasks by status
@@ -12,7 +16,7 @@ A full-stack task management application that lets users create, update, filter,
 
 ## Tech Stack
 **Frontend:** HTML5, CSS3, Vanilla JavaScript (Fetch API)
-**Backend:** Node.js, Express.js
+**Backend:** Node.js, Express.js, JWT, bcryptjs
 **Database:** MongoDB (Mongoose ODM)
 
 ## Project Structure
@@ -34,13 +38,19 @@ task-manager/
 ```
 
 ## API Endpoints
-| Method | Endpoint          | Description          |
-|--------|-------------------|----------------------|
-| GET    | /api/tasks         | Get all tasks (supports ?status= filter) |
-| GET    | /api/tasks/:id      | Get a single task    |
-| POST   | /api/tasks          | Create a new task     |
-| PUT    | /api/tasks/:id      | Update a task          |
-| DELETE | /api/tasks/:id      | Delete a task          |
+| Method | Endpoint            | Description          | Auth required |
+|--------|---------------------|-----------------------|---------------|
+| POST   | /api/auth/send-otp  | Generate OTP for register or login (body: `{ phone, purpose }`) | No |
+| POST   | /api/auth/verify-otp | Verify OTP and get a JWT (body: `{ phone, otp, purpose, name }`) | No |
+| GET    | /api/tasks          | Get all tasks for the logged-in user (supports ?status= filter) | Yes |
+| GET    | /api/tasks/:id      | Get a single task     | Yes |
+| POST   | /api/tasks          | Create a new task     | Yes |
+| PUT    | /api/tasks/:id      | Update a task          | Yes |
+| DELETE | /api/tasks/:id      | Delete a task          | Yes |
+
+Protected routes expect a header: `Authorization: Bearer <token>`
+
+Note: the OTP is currently returned in the `send-otp` response and shown on screen for demo purposes, since no SMS provider is connected. In production, this would be replaced with a call to an SMS gateway (e.g. Twilio) and the OTP would not be exposed in the API response.
 
 ## Setup & Run Locally
 

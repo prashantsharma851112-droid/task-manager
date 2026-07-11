@@ -3,14 +3,51 @@ const API_URL = 'http://localhost:5000/api/tasks';
 const taskForm = document.getElementById('task-form');
 const taskList = document.getElementById('task-list');
 const filterButtons = document.querySelectorAll('.filter-btn');
+const welcomeUser = document.getElementById('welcome-user');
+const logoutBtn = document.getElementById('logout-btn');
 
 let currentFilter = 'all';
 
-// Fetch tasks from backend and render them
+// Redirect to login if no token is present
+const token = localStorage.getItem('token');
+if (!token) {
+  window.location.href = 'login.html';
+}
+
+// Show the logged-in user's name
+const userName = localStorage.getItem('userName');
+if (userName) {
+  welcomeUser.textContent = `Hi, ${userName}`;
+}
+
+// Logout handler
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userName');
+  window.location.href = 'login.html';
+});
+
+// Helper: build headers with the auth token attached
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  };
+}
+
+// Fetch tasks belonging to the logged-in user
 async function fetchTasks() {
   try {
     const url = currentFilter === 'all' ? API_URL : `${API_URL}?status=${currentFilter}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: authHeaders() });
+
+    if (res.status === 401) {
+      // Token missing/expired - send back to login
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+      return;
+    }
+
     const tasks = await res.json();
     renderTasks(tasks);
   } catch (err) {
@@ -56,7 +93,7 @@ taskForm.addEventListener('submit', async (e) => {
   try {
     await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify(newTask)
     });
     taskForm.reset();
@@ -71,7 +108,7 @@ async function updateStatus(id, status) {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ status })
     });
     fetchTasks();
@@ -83,7 +120,10 @@ async function updateStatus(id, status) {
 // Delete a task
 async function deleteTask(id) {
   try {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+      headers: authHeaders()
+    });
     fetchTasks();
   } catch (err) {
     console.error(err);
