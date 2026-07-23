@@ -1,4 +1,4 @@
-const API_URL = 'https://taskmanagerfr.netlify.app/auth.js';
+const API_URL = 'https://task-manager-backend-mqme.onrender.com';
 
 // If already logged in, skip straight to the app
 if (localStorage.getItem('token')) {
